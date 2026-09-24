@@ -16,7 +16,7 @@ function render(file, save) {
   $('count').textContent = `${save.activeCount} / 10 occupied`;
   const meta = $('file-meta'); meta.replaceChildren();
   [['FILE', file.name], ['SIZE', `${(save.fileBytes / 1048576).toFixed(1)} MiB`],
-    ['ACCOUNT ID', save.steamId], ['FORMAT', 'PC / BND4']].forEach(([label, value]) => {
+    ['ACCOUNT ID', save.steamId], ['ACCOUNT CHECKSUM', save.accountChecksum === 'valid' ? 'Valid' : save.accountChecksum === 'absent' ? 'Absent' : 'Mismatch'], ['FORMAT', 'PC / BND4']].forEach(([label, value]) => {
       const item = setText(meta, 'div', '', 'meta-item'); setText(item, 'span', label); setText(item, 'strong', value);
     });
   const warnings = $('warnings'); warnings.replaceChildren();
@@ -33,6 +33,7 @@ function render(file, save) {
       const details = setText(card, 'div', '', 'details');
       setText(details, 'span', `LEVEL ${slot.level ?? '—'}`);
       setText(details, 'span', `PLAY TIME ${duration(slot.seconds ?? 0)}`);
+      setText(card, 'p', `CHECKSUM ${slot.checksum === 'valid' ? 'VALID' : slot.checksum === 'absent' ? 'ABSENT' : 'MISMATCH'}`, `checksum ${slot.checksum}`);
     } else setText(card, 'p', 'No active character in this position.', 'empty-caption');
     slot.issues.forEach(issue => setText(card, 'p', issue, 'issue'));
   });
