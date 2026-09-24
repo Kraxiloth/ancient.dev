@@ -1,4 +1,4 @@
-# EverSave 0.4.3
+# EverSave 0.4.4
 
 Static, client-side Elden Ring PC save inspector and character archivist.
 Serve `public/` at the site root and open `/eversave/`. The page uses ES modules,
@@ -13,6 +13,7 @@ endpoint receives save data.
 - Store individual character archives in this browser's IndexedDB.
 - Export and import `.erchar` archives for portable backups.
 - Generate a new `.sl2` with one selected character slot restored, limited to the same account.
+- Treat inactive slots as empty even if deleted character data remains in their bytes.
 - No direct access to or modification of the game's save folder.
 
 Browser storage is convenient but can be cleared. Export archives as files for

@@ -50,7 +50,8 @@ export function inspect(buffer) {
     if (active && version === 0) issues.push('Marked active, but slot version is zero.');
     if (active && !checksumPresent) issues.push('Marked active, but checksum is all zeros.');
     if (checksum === 'mismatch') issues.push('Slot checksum does not match its data.');
-    if (!active && version !== 0) issues.push('Marked inactive, but slot data has a version.');
+    // Deleted characters can leave checksum-valid bytes in an inactive slot.
+    // The account profile flag determines whether that slot is occupied.
     if (active) {
       const raw = bytes.subarray(profile, profile + 32);
       try { name = decoder.decode(raw).split('\0')[0].trim() || null; }
