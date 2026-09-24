@@ -175,7 +175,7 @@ $('restore-download').addEventListener('click', async () => {
     const name = `${currentFile.name.replace(/\.sl2$/i, '')}.eversave-restored-${stamp}.sl2`;
     restoreUrl = URL.createObjectURL(new Blob([result.buffer], { type: 'application/octet-stream' }));
     const link = $('restore-ready'); link.href = restoreUrl; link.download = name; link.hidden = false;
-    $('restore-feedback').textContent = `Verified ${result.restored.name} in slot ${String(slot).padStart(2, '0')}. Click the download link below, then re-open that file in EverSave to inspect it.`;
+    $('restore-feedback').textContent = `Verified ${result.restored.name} in slot ${String(slot).padStart(2, '0')} (character data version ${result.archivedVersion}). Click the download link below, then re-open that file in EverSave to inspect it.`;
     status.textContent = $('restore-feedback').textContent;
   } catch (error) {
     $('restore-feedback').textContent = error instanceof Error ? error.message : 'Restore generation failed.';

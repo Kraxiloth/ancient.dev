@@ -16,11 +16,10 @@ export function generateRestoredSave(originalBuffer, archiveBuffer, destinationS
   if (metadata.accountId !== original.steamId)
     fail('This character archive belongs to a different account. Cross-account restore is not supported.');
   const archivedVersion = new DataView(slotBytes.buffer, slotBytes.byteOffset + 16, 4).getUint32(0, true);
-  // USER_DATA_10 has its own independent format version. Compare character
-  // payload versions only; they are not expected to match the account version.
-  const activeVersions = [...new Set(original.slots.filter(slot => slot.active).map(slot => slot.version))];
-  if (activeVersions.length !== 1 || archivedVersion !== activeVersions[0])
-    fail(`Character data version mismatch: archive ${archivedVersion}, destination ${activeVersions.join(', ') || 'none'}. This version cannot safely convert between character formats.`);
+  // A single save can legitimately contain different character payload versions.
+  // Copy the archived slot verbatim; never rewrite or "upgrade" its format.
+  if (archivedVersion === 0)
+    fail('The archive contains an empty character slot.');
   const before = original.slots[destinationSlot - 1];
   const outputBuffer = originalBuffer.slice(0);
   const output = new Uint8Array(outputBuffer);
@@ -54,5 +53,5 @@ export function generateRestoredSave(originalBuffer, archiveBuffer, destinationS
     if (!equal(input.subarray(start, start + SLOT_SPAN), output.subarray(start, start + SLOT_SPAN)))
       fail('Another character slot changed unexpectedly.');
   }
-  return { buffer: outputBuffer, report: result, previous: before, restored, metadata };
+  return { buffer: outputBuffer, report: result, previous: before, restored, metadata, archivedVersion };
 }
