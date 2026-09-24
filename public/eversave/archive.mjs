@@ -78,6 +78,19 @@ export function readCharacterArchive(buffer) {
   return metadata;
 }
 
+
+export function extractCharacterArchive(buffer) {
+  const metadata = readCharacterArchive(buffer);
+  const bytes = new Uint8Array(buffer);
+  const jsonLength = new DataView(buffer).getUint32(8, true);
+  const offset = 20 + jsonLength;
+  return {
+    metadata,
+    slotBytes: bytes.subarray(offset, offset + SLOT_LENGTH),
+    profileBytes: bytes.subarray(offset + SLOT_LENGTH, offset + SLOT_LENGTH + PROFILE_SIZE)
+  };
+}
+
 const DB_NAME = 'eversave-character-library';
 const DB_VERSION = 1;
 function openDatabase() {

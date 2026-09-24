@@ -11,8 +11,16 @@
   <p id="status" class="status" role="status" aria-live="polite">Waiting for a file.</p>
   <section id="results" class="results" hidden aria-labelledby="results-title"><div class="results-heading"><div><p class="eyebrow">THE RECORD</p><h2 id="results-title">Character slots</h2></div><span id="count"></span></div><button id="backup" class="backup-button" type="button" hidden>Download unchanged .sl2 backup ↗</button><div id="file-meta" class="meta"></div><div id="warnings" class="warnings" hidden></div><div id="slots" class="slots"></div></section>
   <section class="library" aria-labelledby="library-title"><div class="results-heading"><div><p class="eyebrow">YOUR LIBRARY</p><h2 id="library-title">Character archives</h2></div><label class="import-button" for="import-file">Import .erchar ↗</label><input id="import-file" type="file" accept=".erchar,application/octet-stream"></div>
-    <p class="library-copy">Archives stay in this browser's storage until you delete them or the browser clears site data. Export an .erchar copy to keep one outside the browser. Imported archives cannot yet be restored into a game save.</p>
+    <p class="library-copy">Archives stay in this browser's storage until you delete them or the browser clears site data. Export an .erchar copy to keep one outside the browser. To prepare a restored copy, open a compatible .sl2 file and select an archive below.</p>
     <p id="library-status" class="status" role="status" aria-live="polite">Loading local archives…</p><div id="archive-list" class="archive-list"></div></section>
-  <section class="scope"><p class="eyebrow">CURRENT SCOPE</p><h2>Keep what matters.</h2><p>EverSave reads unencrypted PC BND4 saves, verifies checksums, and makes full-file backups and portable character archives. A valid checksum does not prove that the game will accept a save. Character restoration is still in development; .erchar files are not playable .sl2 saves.</p></section>
-</main><footer class="site-footer"><div class="footer-meta"><span>© 2026 Kraxiloth</span><span>·</span><a href="/">Ancient</a><span>·</span><span>EverSave 0.3</span></div></footer>
+  <section id="restore-panel" class="restore-panel" hidden aria-labelledby="restore-title">
+    <p class="eyebrow">EXPERIMENTAL / RESTORE</p><h2 id="restore-title">Generate a restored copy</h2>
+    <p id="restore-source"></p><label for="restore-target">Destination in the opened save</label>
+    <select id="restore-target"></select><p id="restore-preview" class="restore-preview"></p>
+    <label class="restore-ack"><input id="restore-ack" type="checkbox"> I understand the selected slot will be replaced in the downloaded copy. My original file stays unchanged.</label>
+    <button id="restore-download" class="backup-button" type="button" disabled>Generate new .sl2 ↗</button><p id="restore-feedback" class="status" role="status" aria-live="polite"></p>
+    <p class="archive-note">The output is checked for changed byte ranges and checksums. It has not been proven playable in Elden Ring. Re-open the downloaded file in EverSave before any game test, and keep your full backup.</p>
+  </section>
+  <section class="scope"><p class="eyebrow">CURRENT SCOPE</p><h2>Keep what matters.</h2><p>EverSave reads unencrypted PC BND4 saves, verifies checksums, and makes full-file backups and portable character archives. A valid checksum does not prove that the game will accept a save. Restoration generates a new .sl2 copy for testing. Game compatibility has not yet been verified; .erchar files themselves are not playable .sl2 saves.</p></section>
+</main><footer class="site-footer"><div class="footer-meta"><span>© 2026 Kraxiloth</span><span>·</span><a href="/">Ancient</a><span>·</span><span>EverSave 0.4</span></div></footer>
 <script type="module" src="./app.mjs"></script></body></html>

@@ -1,9 +1,10 @@
 import { inspect } from './parser.mjs';
+import { generateRestoredSave } from './restore.mjs';
 import { createCharacterArchive, readCharacterArchive, storeArchive, listArchives, getArchive, deleteArchive } from './archive.mjs';
 const $ = id => document.getElementById(id);
 const input = $('file'), panel = document.querySelector('.open-panel');
 const status = $('status'), libraryStatus = $('library-status');
-let currentFile = null, currentBuffer = null, currentSave = null;
+let currentFile = null, currentBuffer = null, currentSave = null, pendingArchive = null;
 const setText = (parent, tag, value, className) => {
   const node = document.createElement(tag); node.textContent = value;
   if (className) node.className = className;
@@ -28,7 +29,7 @@ function button(parent, label, action, disabled = false) {
   element.addEventListener('click', async () => {
     element.disabled = true;
     try { await action(); }
-    catch (error) { status.textContent = error instanceof Error ? error.message : 'The action failed.'; }
+    catch (error) { const message = error instanceof Error ? error.message : 'The action failed.'; status.textContent = message; if (label === 'Prepare restore') libraryStatus.textContent = message; }
     finally { element.disabled = disabled; }
   });
   return element;
@@ -83,7 +84,8 @@ function render(file, save) {
 }
 async function open(file) {
   if (!file) return;
-  currentFile = currentBuffer = currentSave = null;
+  currentFile = currentBuffer = currentSave = pendingArchive = null;
+  $('restore-panel').hidden = true;
   $('results').hidden = true; $('backup').hidden = true;
   if (!/\.sl2$/i.test(file.name)) { status.textContent = 'Choose an Elden Ring .sl2 file.'; return; }
   status.textContent = 'Reading and checking local file…';
@@ -111,6 +113,27 @@ async function renderLibrary() {
         download(buffer, `${filename(entry.label)}-${entry.createdAt.slice(0, 10)}.erchar`);
         libraryStatus.textContent = `Exported ${entry.label}.`;
       });
+      button(actions, 'Prepare restore', async () => {
+        if (!currentSave) throw new Error('Open a destination .sl2 save first, then select this archive.');
+        const buffer = await getArchive(entry.id);
+        const metadata = readCharacterArchive(buffer);
+        if (metadata.accountId !== currentSave.steamId) throw new Error('The archive account ID differs from the opened save.');
+        pendingArchive = buffer;
+        $('restore-source').textContent = `${metadata.characterName} · Level ${metadata.level} · Archived from slot ${String(metadata.sourceSlot).padStart(2, '0')}`;
+        const target = $('restore-target'); target.replaceChildren();
+        currentSave.slots.forEach(slot => {
+          const option = document.createElement('option');
+          option.value = slot.index;
+          option.textContent = `Slot ${String(slot.index).padStart(2, '0')} - ${slot.active ? slot.name || 'Unnamed' : 'Empty'}`;
+          target.append(option);
+        });
+        target.value = String(metadata.sourceSlot);
+        $('restore-ack').checked = false;
+        updateRestorePreview();
+        $('restore-feedback').textContent = '';
+        $('restore-panel').hidden = false;
+        $('restore-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
       button(actions, 'Delete', async () => {
         if (!confirm(`Delete "${entry.label}" from this browser? Export it first if you want to keep a copy.`)) return;
         await deleteArchive(entry.id); await renderLibrary();
@@ -120,6 +143,33 @@ async function renderLibrary() {
     libraryStatus.textContent = error instanceof Error ? error.message : 'Could not read browser archives.';
   }
 }
+function updateRestorePreview() {
+  if (!currentSave || !pendingArchive) return;
+  const slot = currentSave.slots[Number($('restore-target').value) - 1];
+  const metadata = readCharacterArchive(pendingArchive);
+  $('restore-preview').textContent = slot.active
+    ? `Slot ${String(slot.index).padStart(2, '0')} currently contains ${slot.name} (level ${slot.level}). The downloaded copy will contain ${metadata.characterName} (level ${metadata.level}) there.`
+    : `Slot ${String(slot.index).padStart(2, '0')} is empty. The downloaded copy will contain ${metadata.characterName} (level ${metadata.level}) there.`;
+  $('restore-download').disabled = !$('restore-ack').checked;
+}
+$('restore-target').addEventListener('change', () => { $('restore-ack').checked = false; updateRestorePreview(); });
+$('restore-ack').addEventListener('change', updateRestorePreview);
+$('restore-download').addEventListener('click', () => {
+  if (!currentBuffer || !pendingArchive || !$('restore-ack').checked) return;
+  const slot = Number($('restore-target').value);
+  const previous = currentSave.slots[slot - 1];
+  const message = `Generate a NEW .sl2 copy with slot ${String(slot).padStart(2, '0')} replaced?${previous.active ? ` The copy will replace ${previous.name} in that slot.` : ''} Your opened file will not be changed.`;
+  if (!confirm(message)) return;
+  const control = $('restore-download'); control.disabled = true;
+  try {
+    const result = generateRestoredSave(currentBuffer, pendingArchive, slot);
+    const stamp = new Date().toISOString().replace(/[-:]/g, '').replace('T', '-').slice(0, 15);
+    download(result.buffer, `${currentFile.name.replace(/\.sl2$/i, '')}.eversave-restored-${stamp}.sl2`);
+    status.textContent = `Generated and checked a new save with ${result.restored.name} in slot ${String(slot).padStart(2, '0')}. Re-open the downloaded copy here to inspect it.`;
+    $('restore-feedback').textContent = status.textContent;
+  } catch (error) { status.textContent = error instanceof Error ? error.message : 'Restore generation failed.'; $('restore-feedback').textContent = status.textContent; }
+  finally { control.disabled = false; }
+});
 input.addEventListener('change', () => open(input.files?.[0]));
 for (const type of ['dragenter', 'dragover']) panel.addEventListener(type, event => { event.preventDefault(); panel.classList.add('dragging'); });
 for (const type of ['dragleave', 'drop']) panel.addEventListener(type, event => { event.preventDefault(); panel.classList.remove('dragging'); });
