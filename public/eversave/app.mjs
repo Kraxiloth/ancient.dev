@@ -4,7 +4,13 @@ import { createCharacterArchive, readCharacterArchive, storeArchive, listArchive
 const $ = id => document.getElementById(id);
 const input = $('file'), panel = document.querySelector('.open-panel');
 const status = $('status'), libraryStatus = $('library-status');
-let currentFile = null, currentBuffer = null, currentSave = null, pendingArchive = null;
+let currentFile = null, currentBuffer = null, currentSave = null, pendingArchive = null, restoreUrl = null;
+function clearPreparedDownload() {
+  if (restoreUrl) URL.revokeObjectURL(restoreUrl);
+  restoreUrl = null;
+  $('restore-ready').removeAttribute('href');
+  $('restore-ready').hidden = true;
+}
 const setText = (parent, tag, value, className) => {
   const node = document.createElement(tag); node.textContent = value;
   if (className) node.className = className;
@@ -85,6 +91,7 @@ function render(file, save) {
 async function open(file) {
   if (!file) return;
   currentFile = currentBuffer = currentSave = pendingArchive = null;
+  clearPreparedDownload();
   $('restore-panel').hidden = true;
   $('results').hidden = true; $('backup').hidden = true;
   if (!/\.sl2$/i.test(file.name)) { status.textContent = 'Choose an Elden Ring .sl2 file.'; return; }
@@ -118,6 +125,7 @@ async function renderLibrary() {
         const buffer = await getArchive(entry.id);
         const metadata = readCharacterArchive(buffer);
         if (metadata.accountId !== currentSave.steamId) throw new Error('The archive account ID differs from the opened save.');
+        clearPreparedDownload();
         pendingArchive = buffer;
         $('restore-source').textContent = `${metadata.characterName} · Level ${metadata.level} · Archived from slot ${String(metadata.sourceSlot).padStart(2, '0')}`;
         const target = $('restore-target'); target.replaceChildren();
@@ -152,23 +160,27 @@ function updateRestorePreview() {
     : `Slot ${String(slot.index).padStart(2, '0')} is empty. The downloaded copy will contain ${metadata.characterName} (level ${metadata.level}) there.`;
   $('restore-download').disabled = !$('restore-ack').checked;
 }
-$('restore-target').addEventListener('change', () => { $('restore-ack').checked = false; updateRestorePreview(); });
+$('restore-target').addEventListener('change', () => { clearPreparedDownload(); $('restore-ack').checked = false; $('restore-feedback').textContent = ''; updateRestorePreview(); });
 $('restore-ack').addEventListener('change', updateRestorePreview);
-$('restore-download').addEventListener('click', () => {
+$('restore-download').addEventListener('click', async () => {
   if (!currentBuffer || !pendingArchive || !$('restore-ack').checked) return;
   const slot = Number($('restore-target').value);
-  const previous = currentSave.slots[slot - 1];
-  const message = `Generate a NEW .sl2 copy with slot ${String(slot).padStart(2, '0')} replaced?${previous.active ? ` The copy will replace ${previous.name} in that slot.` : ''} Your opened file will not be changed.`;
-  if (!confirm(message)) return;
   const control = $('restore-download'); control.disabled = true;
+  clearPreparedDownload();
+  $('restore-feedback').textContent = 'Generating and checking the new copy…';
+  await new Promise(resolve => requestAnimationFrame(() => setTimeout(resolve, 0)));
   try {
     const result = generateRestoredSave(currentBuffer, pendingArchive, slot);
     const stamp = new Date().toISOString().replace(/[-:]/g, '').replace('T', '-').slice(0, 15);
-    download(result.buffer, `${currentFile.name.replace(/\.sl2$/i, '')}.eversave-restored-${stamp}.sl2`);
-    status.textContent = `Generated and checked a new save with ${result.restored.name} in slot ${String(slot).padStart(2, '0')}. Re-open the downloaded copy here to inspect it.`;
-    $('restore-feedback').textContent = status.textContent;
-  } catch (error) { status.textContent = error instanceof Error ? error.message : 'Restore generation failed.'; $('restore-feedback').textContent = status.textContent; }
-  finally { control.disabled = false; }
+    const name = `${currentFile.name.replace(/\.sl2$/i, '')}.eversave-restored-${stamp}.sl2`;
+    restoreUrl = URL.createObjectURL(new Blob([result.buffer], { type: 'application/octet-stream' }));
+    const link = $('restore-ready'); link.href = restoreUrl; link.download = name; link.hidden = false;
+    $('restore-feedback').textContent = `Verified ${result.restored.name} in slot ${String(slot).padStart(2, '0')}. Click the download link below, then re-open that file in EverSave to inspect it.`;
+    status.textContent = $('restore-feedback').textContent;
+  } catch (error) {
+    $('restore-feedback').textContent = error instanceof Error ? error.message : 'Restore generation failed.';
+    status.textContent = $('restore-feedback').textContent;
+  } finally { control.disabled = !$('restore-ack').checked; }
 });
 input.addEventListener('change', () => open(input.files?.[0]));
 for (const type of ['dragenter', 'dragover']) panel.addEventListener(type, event => { event.preventDefault(); panel.classList.add('dragging'); });

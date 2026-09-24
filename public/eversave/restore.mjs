@@ -16,8 +16,11 @@ export function generateRestoredSave(originalBuffer, archiveBuffer, destinationS
   if (metadata.accountId !== original.steamId)
     fail('This character archive belongs to a different account. Cross-account restore is not supported.');
   const archivedVersion = new DataView(slotBytes.buffer, slotBytes.byteOffset + 16, 4).getUint32(0, true);
-  if (archivedVersion !== original.accountVersion)
-    fail('The archived character and destination save have different data versions.');
+  // USER_DATA_10 has its own independent format version. Compare character
+  // payload versions only; they are not expected to match the account version.
+  const activeVersions = [...new Set(original.slots.filter(slot => slot.active).map(slot => slot.version))];
+  if (activeVersions.length !== 1 || archivedVersion !== activeVersions[0])
+    fail(`Character data version mismatch: archive ${archivedVersion}, destination ${activeVersions.join(', ') || 'none'}. This version cannot safely convert between character formats.`);
   const before = original.slots[destinationSlot - 1];
   const outputBuffer = originalBuffer.slice(0);
   const output = new Uint8Array(outputBuffer);
