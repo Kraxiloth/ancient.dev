@@ -1,0 +1,17 @@
+{
+ "name": "eversave-gallery",
+ "main": "gallery-worker.mjs",
+ "compatibility_date": "2026-09-30",
+ "assets": {"directory":"./public","binding":"ASSETS","run_worker_first":["/api/*"]},
+ "d1_databases":[{"binding":"DB","database_name":"eversave-gallery","database_id":"REPLACE_WITH_DATABASE_ID","migrations_dir":"migrations"}],
+ "r2_buckets":[{"binding":"IMAGES","bucket_name":"eversave-gallery-images"}],
+ "send_email":[{"name":"EMAIL","allowed_destination_addresses":["kraxiloth@ancient.dev"]}],
+ "vars": {
+  "SITE_ORIGIN":"https://ancient.dev",
+  "EVERSAVE_URL":"https://ancient.dev/eversave/",
+  "REVIEW_EMAIL":"kraxiloth@ancient.dev",
+  "EMAIL_FROM":"notifications@ancient.dev",
+  "TURNSTILE_SITE_KEY":"REPLACE_WITH_SITE_KEY"
+ },
+ "triggers":{"crons":["0 * * * *"]}
+}

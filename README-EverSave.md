@@ -1,6 +1,10 @@
-# EverSave 0.4.4
+# EverSave 0.5.0 preview
 
-Static, client-side Elden Ring PC save inspector and character archivist.
+Elden Ring PC character archivist, appearance favorite importer/exporter, and moderated community gallery.
+
+See `SETUP-GALLERY.md` for the new features, validation limits, and Cloudflare setup.
+The save tools remain client-side. The optional gallery backend stores only submitted
+appearances and screenshots.
 Serve `public/` at the site root and open `/eversave/`. The page uses ES modules,
 IndexedDB, and browser downloads. Hosting over HTTPS is recommended. No server
 endpoint receives save data.

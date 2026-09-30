@@ -91,6 +91,7 @@ function render(file, save) {
 async function open(file) {
   if (!file) return;
   currentFile = currentBuffer = currentSave = pendingArchive = null;
+  document.dispatchEvent(new CustomEvent('eversave:save', {detail:null}));
   clearPreparedDownload();
   $('restore-panel').hidden = true;
   $('results').hidden = true; $('backup').hidden = true;
@@ -101,6 +102,7 @@ async function open(file) {
     const save = inspect(buffer);
     currentFile = file; currentBuffer = buffer; currentSave = save;
     render(file, save);
+    document.dispatchEvent(new CustomEvent('eversave:save', {detail:{buffer,save,file}}));
   } catch (error) { status.textContent = error instanceof Error ? error.message : 'Could not read this file.'; }
   finally { input.value = ''; }
 }
@@ -202,3 +204,5 @@ $('import-file').addEventListener('change', async event => {
   finally { $('import-file').value = ''; }
 });
 renderLibrary();
+
+export function openedSave() { return currentBuffer ? { buffer:currentBuffer, save:currentSave, file:currentFile } : null; }
