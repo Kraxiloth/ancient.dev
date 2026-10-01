@@ -1,129 +1,29 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Ancient is the workshop of Kraxiloth - independent tools and projects for games, collections, and communities.">
-  <meta name="theme-color" content="#090a0d">
-  <title>Ancient - Tools by Kraxiloth</title>
-  <link rel="stylesheet" href="/css/ancient.css">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ancient Workshop - Projects by Jan Bodin</title>
+<meta name="description" content="Independent applications, game utilities and public datasets by Jan Bodin, also known as Kraxiloth.">
+<meta name="theme-color" content="#101113">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23101113'/%3E%3Cpath d='M6 25L16 6l10 19M10 19h12' fill='none' stroke='%23c8aa7c' stroke-width='2'/%3E%3C/svg%3E">
+<style>
+:root{color-scheme:dark;--bg:#101113;--text:#eeede9;--muted:#a9a9ad;--line:#303136;--gold:#c8aa7c;--purple:#b49ad8}*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:30px}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}a{color:inherit;text-decoration:none}a:focus-visible{outline:2px solid var(--purple);outline-offset:6px}a:hover{color:var(--gold)}.wrap{width:min(1200px,calc(100% - 80px));margin:auto}.skip{position:absolute;top:-100px;left:20px;background:var(--bg);padding:10px;z-index:5}.skip:focus{top:10px}header{min-height:100px;display:flex;align-items:center;justify-content:space-between;gap:30px}.brand{font-size:16px;letter-spacing:.17em;text-transform:uppercase;font-weight:600}.brand span{display:block;font-size:12px;letter-spacing:.32em;color:var(--gold);font-weight:400}nav{display:flex;gap:30px;font-size:14px;color:#c5c5c9}.hero{padding:65px 0 0}.intro{display:flex;justify-content:space-between;align-items:end;gap:50px;padding-bottom:45px}.eyebrow{text-transform:uppercase;letter-spacing:.16em;font-size:12px;color:var(--gold);margin:0 0 18px}.hero h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:clamp(48px,6.5vw,88px);line-height:1.05;letter-spacing:-.045em;margin:0}.intro-copy{max-width:330px;color:var(--muted);margin:0 0 5px;font-size:17px}.art{margin:0;position:relative}.art img{width:100%;height:auto;display:block}.art figcaption{display:flex;justify-content:space-between;gap:15px;padding:15px 0 25px;color:var(--muted);font-size:12px;letter-spacing:.06em;border-bottom:1px solid var(--line)}section.content{padding:85px 0;border-bottom:1px solid var(--line)}.section-head{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:end;margin-bottom:40px}h2{font:400 clamp(30px,4vw,44px)/1.2 Georgia,'Times New Roman',serif;letter-spacing:-.025em;margin:0}p{margin:0 0 18px}.section-head>p{color:var(--muted);max-width:470px;margin:0}.project{display:grid;grid-template-columns:80px 1fr 1fr;gap:30px;padding:38px 0;border-top:1px solid var(--line)}.number{color:#727278;font-size:13px;padding-top:8px;font-variant-numeric:tabular-nums}.project h3{font:400 40px/1.2 Georgia,'Times New Roman',serif;margin:0 0 13px}.kind{font-size:13px;color:var(--gold);margin-bottom:18px}.project p.description{color:var(--muted);max-width:470px}.tags{font-size:13px;color:#b8b8bd;line-height:1.9}.links{display:flex;flex-wrap:wrap;gap:24px;margin-top:24px}.links a{font-size:14px;border-bottom:1px solid #71604a;padding-bottom:3px}.subtle{color:var(--muted)}.resources{display:grid;grid-template-columns:1fr 1.15fr;gap:80px}.resources p{color:var(--muted);max-width:430px}.resources h2{margin-bottom:22px}.resource-link{display:block;border-top:1px solid var(--line);padding:25px 0}.resource-link:last-child{border-bottom:1px solid var(--line)}.resource-link strong{display:block;font-weight:500;font-size:21px;margin-bottom:5px}.resource-link span{display:block;color:var(--muted);font-size:15px}.resource-link small{display:block;color:var(--gold);font-size:13px;margin-top:12px}.experiment{display:flex;gap:30px;justify-content:space-between;align-items:baseline;padding:27px 0 0;margin-top:35px;border-top:1px solid var(--line)}.experiment h3{font-size:18px;font-weight:500;margin:0}.experiment p{font-size:14px;color:var(--muted);margin:0}.about{display:grid;grid-template-columns:1fr 1.15fr;gap:80px}.about p{color:var(--muted);max-width:550px}.about strong{font-weight:500;color:var(--text)}footer{display:flex;justify-content:space-between;gap:25px;padding:35px 0 45px;font-size:12px;color:var(--muted)}footer .footer-links{display:flex;gap:25px}@media(min-width:1500px){.hero{padding-top:85px}}@media(max-width:760px){.wrap{width:calc(100% - 40px)}header{min-height:95px;align-items:flex-start;padding-top:25px;gap:15px}.brand{font-size:13px}.brand span{font-size:10px}nav{gap:14px;flex-wrap:wrap;justify-content:flex-end;max-width:200px;font-size:13px}.hero{padding-top:35px}.intro{display:block;padding-bottom:28px}.hero h1{font-size:clamp(44px,10vw,65px)}.intro-copy{margin-top:25px;max-width:440px;font-size:16px}.art figcaption{font-size:11px}.art figcaption span:last-child{display:none}section.content{padding:55px 0}.section-head,.resources,.about{grid-template-columns:1fr;gap:25px}.project{grid-template-columns:35px 1fr;gap:15px;padding:30px 0}.project-details{grid-column:2}.project h3{font-size:34px}.kind{margin-bottom:5px}.experiment{display:block}.experiment p{margin-top:10px}footer{display:block}footer .footer-links{margin-top:15px}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
 </head>
 <body>
-  <div class="ambient" aria-hidden="true">
-    <div class="orbit orbit-a"></div>
-    <div class="orbit orbit-b"></div>
-    <div class="orbit orbit-c"></div>
-    <div class="axis axis-x"></div>
-    <div class="axis axis-y"></div>
-  </div>
-
-  <header class="site-header">
-    <a class="sigil" href="#top" aria-label="Ancient home">A</a>
-    <nav aria-label="Primary navigation">
-      <a href="#works">Works</a>
-      <a href="#about">About</a>
-      <a href="https://github.com/Kraxiloth/ancient.dev" rel="noreferrer">GitHub</a>
-    </nav>
-  </header>
-
-  <main id="top">
-    <section class="hero" aria-labelledby="hero-title">
-      <div class="hero-mark" aria-hidden="true">
-        <span></span>
-      </div>
-      <p class="eyebrow">The workshop of Kraxiloth</p>
-      <h1 id="hero-title">ANCIENT</h1>
-      <p class="hero-line">Tools forged for persistent worlds.</p>
-      <p class="hero-copy">Independent software and resources for games, collections, and the communities built around them.</p>
-      <a class="explore" href="#works">Explore <span aria-hidden="true">↓</span></a>
-    </section>
-
-    <section class="section works" id="works" aria-labelledby="works-title">
-      <div class="section-heading">
-        <p class="eyebrow">01 / Works</p>
-        <h2 id="works-title">Things made to be used.</h2>
-        <p>Most projects begin with a missing tool, an irritating limitation, or the dangerous thought that it would be easier to build the thing myself.</p>
-      </div>
-
-      <div class="project-grid">
-        <a class="project-card sorcery" href="https://sorcery.no" rel="noreferrer">
-          <div class="project-topline">
-            <span class="project-index">001</span>
-            <span class="project-status"><i></i> Active</span>
-          </div>
-          <div class="project-body">
-            <p class="project-kind">Tools &amp; resources</p>
-            <h3>Sorcery</h3>
-            <p>A growing collection of tools and resources for <em>Sorcery: Contested Realm</em>, including collection management, deck building, binder planning, and developer data.</p>
-          </div>
-          <div class="project-footer">
-            <span>sorcery.no</span>
-            <span class="arrow" aria-hidden="true">↗</span>
-          </div>
-        </a>
-
-        <a class="project-card repository" href="/eversave/">
-          <div class="project-topline">
-            <span class="project-index">002</span>
-            <span class="project-status quiet">Read-only preview</span>
-          </div>
-          <div class="project-body">
-            <p class="project-kind">Elden Ring / local save inspection</p>
-            <h3>EverSave</h3>
-            <p>Inspect and archive Elden Ring characters locally in your browser. Make an unchanged backup of the full save or export a portable character archive.</p>
-          </div>
-          <div class="project-footer">
-            <span>Open EverSave</span>
-            <span class="arrow" aria-hidden="true">↗</span>
-          </div>
-        </a>
-
-        <a class="project-card repository" href="https://github.com/Kraxiloth/ancient.dev" rel="noreferrer">
-          <div class="project-topline">
-            <span class="project-index">SOURCE</span>
-            <span class="project-status quiet">Public</span>
-          </div>
-          <div class="project-body">
-            <p class="project-kind">The workshop itself</p>
-            <h3>Ancient</h3>
-            <p>This site is intentionally small, fast, and open. The source lives in public, because a homepage does not require seventeen dependencies and a quarterly infrastructure review.</p>
-          </div>
-          <div class="project-footer">
-            <span>GitHub repository</span>
-            <span class="arrow" aria-hidden="true">↗</span>
-          </div>
-        </a>
-      </div>
-    </section>
-
-    <section class="section about" id="about" aria-labelledby="about-title">
-      <div class="about-rule" aria-hidden="true"><span></span></div>
-      <div class="about-grid">
-        <div>
-          <p class="eyebrow">02 / About</p>
-          <h2 id="about-title">Built because it should exist.</h2>
-        </div>
-        <div class="about-copy">
-          <p><strong>Ancient is the workshop of Kraxiloth.</strong></p>
-          <p>I build tools for games, collections, and communities I care about. Most begin because I want something that doesn't exist, or because an existing solution almost does what I need.</p>
-          <p>Ancient is where those projects live.</p>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="site-footer">
-    <div class="closing">
-      <div class="closing-sigil" aria-hidden="true">◇</div>
-      <p>Nothing here is ancient.<br>Not yet.</p>
-    </div>
-    <div class="footer-meta">
-      <span>© 2026 Kraxiloth</span>
-      <span class="footer-separator" aria-hidden="true">·</span>
-      <a href="https://github.com/Kraxiloth" rel="noreferrer">GitHub</a>
-      <span class="footer-separator" aria-hidden="true">·</span>
-      <a href="https://github.com/Kraxiloth/ancient.dev" rel="noreferrer">Source</a>
-    </div>
-  </footer>
-</body>
-</html>
+<a class="skip" href="#main">Skip to content</a>
+<div class="wrap">
+<header><a class="brand" href="#top">Ancient<span>Workshop</span></a><nav aria-label="Primary"><a href="#projects">Projects</a><a href="#data">Open data</a><a href="#about">About</a><a href="https://github.com/Kraxiloth">GitHub</a></nav></header>
+<main id="main">
+<section class="hero" id="top" aria-labelledby="title"><div class="intro"><div><p class="eyebrow">The workshop of Kraxiloth</p><h1 id="title">Ancient Workshop</h1></div><p class="intro-copy">Independent applications, tools and experiments.<br>Built out of curiosity. Made to be used.</p></div><figure class="art"><img src="assets/workshop.webp" width="1672" height="941" alt="Kraxiloth assembling a glowing mechanism through telekinesis, surrounded by books, cards and modern technology in his workshop." fetchpriority="high"><figcaption><span>Ideas, knowledge and a little experimentation.</span><span>ancient.dev</span></figcaption></figure></section>
+<section class="content" id="projects" aria-labelledby="projects-title"><div class="section-head"><div><p class="eyebrow">01 / Selected projects</p><h2 id="projects-title">From the workshop.</h2></div><p>Applications for the games I play and the problems I encounter. Each has its own home, purpose and identity.</p></div>
+<article class="project"><span class="number" aria-hidden="true">001</span><div><p class="kind">Web application / Sorcery: Contested Realm</p><h3>Ledger</h3><p class="tags">Collections · Deck building · Statistics</p></div><div class="project-details"><p class="description">Manage your collection and build decks in one place. Import and export card lists, check your deck, explore its statistics and share it with other players.</p><div class="links"><a href="https://ledger.sorcery.no">Open Ledger</a><a href="https://sorcery.no">Explore Sorcery tools</a></div></div></article>
+<article class="project"><span class="number" aria-hidden="true">002</span><div><p class="kind">Game utility / Elden Ring</p><h3>EverSave</h3><p class="tags">Save backups · Character archives · Restore</p></div><div class="project-details"><p class="description">Back up Elden Ring saves, archive individual characters and bring them back when you need them. A practical tool for keeping your playthroughs close at hand.</p><div class="links"><a href="/eversave/">Open EverSave</a><a href="https://github.com/Kraxiloth/ancient.dev">View repository</a></div></div></article>
+<div class="experiment"><div><p class="eyebrow">On the workbench</p><h3>Black Communion</h3></div><p>An action RPG experiment in Unreal Engine. Early development.</p></div>
+</section>
+<section class="content resources" id="data" aria-labelledby="data-title"><div><p class="eyebrow">02 / Tools &amp; open data</p><h2 id="data-title">Part of a larger collection.</h2><p>My Sorcery projects live together at sorcery.no. Alongside the applications, public datasets give other developers material to build with.</p></div><div><a class="resource-link" href="https://sorcery.no"><strong>Sorcery.no</strong><span>Community tools and resources for Sorcery: Contested Realm.</span><small>Explore the collection</small></a><a class="resource-link" href="https://data.sorcery.no"><strong>Sorcery datasets</strong><span>Public card data for your own tools, applications and experiments.</span><small>Browse data.sorcery.no</small></a></div></section>
+<section class="content about" id="about" aria-labelledby="about-title"><div><p class="eyebrow">03 / About</p><h2 id="about-title">Built because I wanted<br>it to exist.</h2></div><div><p><strong>Ancient Workshop is the home of projects by Jan Bodin, also known as Kraxiloth.</strong></p><p>I build applications for games, collections and communities I care about. Most begin with a missing tool, an irritating limitation, or an idea I want to explore.</p><p>Here you’ll find the useful results, the ongoing projects and a few things still taking shape.</p><div class="links"><a href="https://github.com/Kraxiloth">Find me on GitHub</a><a href="mailto:kraxiloth@ancient.dev">Get in touch</a></div></div></section>
+</main>
+<footer><span>© 2026 Jan Bodin / Ancient Workshop</span><div class="footer-links"><a href="https://github.com/Kraxiloth/ancient.dev">Website source</a><a href="#top">Back to top</a></div></footer>
+</div>
+</body></html>
