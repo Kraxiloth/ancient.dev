@@ -5,6 +5,33 @@ import { inspect, HEADER, SLOT_SPAN, ACCOUNT, ACCOUNT_DATA, PROFILE_FLAGS, PROFI
 const equal = (a, b) => a.length === b.length && a.every((value, index) => value === b[index]);
 const fail = message => { throw new Error(message); };
 
+// Account IDs can move within variable-length character records. Find the exact
+// archived SteamID64 in the character payload, never in the destination account
+// section or in another slot. Archive/profile bytes are left untouched.
+export function rebindCharacterAccount(slotBytes, sourceAccountId, destinationAccountId) {
+  const converted = slotBytes.slice();
+  if (sourceAccountId === destinationAccountId) return { slotBytes: converted, replacements: 0 };
+  const source = BigInt(sourceAccountId), destination = BigInt(destinationAccountId);
+  const base = 0x0110000100000000n, maximum = 0x01100001ffffffffn;
+  if (source < base || source > maximum || destination < base || destination > maximum)
+    fail('The archive or destination has an unsupported Steam account ID. Account conversion cannot be verified.');
+  const sourceBytes = new Uint8Array(8), destinationBytes = new Uint8Array(8);
+  new DataView(sourceBytes.buffer).setBigUint64(0, source, true);
+  new DataView(destinationBytes.buffer).setBigUint64(0, destination, true);
+  let replacements = 0;
+  for (let i = 16; i <= converted.length - 8; i++) {
+    if (sourceBytes.every((value, index) => converted[i + index] === value)) {
+      converted.set(destinationBytes, i); replacements++; i += 7;
+    }
+  }
+  if (!replacements) fail('The source account ID was not found in the archived character. Conversion cannot be verified.');
+  for (let i = 16; i <= converted.length - 8; i++)
+    if (sourceBytes.every((value, index) => converted[i + index] === value))
+      fail('A source account ID remained after character conversion.');
+  converted.set(md5(converted.subarray(16)), 0);
+  return { slotBytes: converted, replacements };
+}
+
 export function generateRestoredSave(originalBuffer, archiveBuffer, destinationSlot) {
   if (!Number.isInteger(destinationSlot) || destinationSlot < 1 || destinationSlot > 10)
     fail('Choose a destination slot from 1 to 10.');
@@ -13,11 +40,9 @@ export function generateRestoredSave(originalBuffer, archiveBuffer, destinationS
       original.slots.some(slot => slot.issues.length || (slot.active && slot.checksum !== 'valid')))
     fail('The destination save has checksum or slot warnings. Restoration is disabled for this file.');
   const { metadata, slotBytes, profileBytes } = extractCharacterArchive(archiveBuffer);
-  if (metadata.accountId !== original.steamId)
-    fail('This character archive belongs to a different account. Cross-account restore is not supported.');
   const archivedVersion = new DataView(slotBytes.buffer, slotBytes.byteOffset + 16, 4).getUint32(0, true);
   // A single save can legitimately contain different character payload versions.
-  // Copy the archived slot verbatim; never rewrite or "upgrade" its format.
+  // Preserve its format version; only rebind ownership when accounts differ.
   if (archivedVersion === 0)
     fail('The archive contains an empty character slot.');
   const before = original.slots[destinationSlot - 1];
@@ -25,7 +50,8 @@ export function generateRestoredSave(originalBuffer, archiveBuffer, destinationS
   const output = new Uint8Array(outputBuffer);
   const slotStart = HEADER + (destinationSlot - 1) * SLOT_SPAN;
   const profileStart = PROFILE_START + (destinationSlot - 1) * PROFILE_SIZE;
-  output.set(slotBytes, slotStart);
+  const conversion = rebindCharacterAccount(slotBytes, metadata.accountId, original.steamId);
+  output.set(conversion.slotBytes, slotStart);
   output.set(profileBytes, profileStart);
   output[PROFILE_FLAGS + destinationSlot - 1] = 1;
   output.set(md5(output.subarray(ACCOUNT_DATA, ACCOUNT_DATA + 0x60000)), ACCOUNT);
@@ -53,5 +79,6 @@ export function generateRestoredSave(originalBuffer, archiveBuffer, destinationS
     if (!equal(input.subarray(start, start + SLOT_SPAN), output.subarray(start, start + SLOT_SPAN)))
       fail('Another character slot changed unexpectedly.');
   }
-  return { buffer: outputBuffer, report: result, previous: before, restored, metadata, archivedVersion };
+  return { buffer: outputBuffer, report: result, previous: before, restored, metadata, archivedVersion,
+    accountConverted: metadata.accountId !== original.steamId, accountIdReplacements: conversion.replacements };
 }

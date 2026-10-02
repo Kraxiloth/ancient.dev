@@ -169,7 +169,6 @@ function chooseDestinationSave() {
 function prepareCharacterRestore(buffer) {
   if (!currentSave) throw new Error('Choose a destination save first.');
   const metadata = readCharacterArchive(buffer);
-  if (metadata.accountId !== currentSave.steamId) throw new Error('The archive account ID differs from the chosen save. Choose a save from the same account.');
   clearPreparedDownload();
   pendingArchive = buffer;
   $('restore-source').textContent = `${metadata.characterName} · Level ${metadata.level} · Archived from slot ${String(metadata.sourceSlot).padStart(2, '0')}`;
@@ -183,7 +182,9 @@ function prepareCharacterRestore(buffer) {
   $('restore-ack').checked = false;
   updateRestorePreview();
   $('restore-feedback').textContent = '';
-  libraryStatus.textContent = 'Choose the slot to restore this character into.';
+  libraryStatus.textContent = metadata.accountId === currentSave.steamId
+    ? 'Choose the slot to restore this character into.'
+    : 'Choose the slot to restore this character into. The imported character will use the destination account.';
   $('restore-panel').hidden = false;
   $('restore-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
@@ -203,6 +204,7 @@ function updateRestorePreview() {
   $('restore-preview').textContent = slot.active
     ? `Slot ${String(slot.index).padStart(2, '0')} currently contains ${slot.name} (level ${slot.level}). The downloaded copy will contain ${metadata.characterName} (level ${metadata.level}) there.`
     : `Slot ${String(slot.index).padStart(2, '0')} is empty. The downloaded copy will contain ${metadata.characterName} (level ${metadata.level}) there.`;
+  if (metadata.accountId !== currentSave.steamId) $('restore-preview').textContent += ' The imported character will be assigned to the destination account; its shared settings and other characters stay intact.';
   $('restore-download').disabled = !$('restore-ack').checked;
 }
 $('restore-target').addEventListener('change', () => { clearPreparedDownload(); $('restore-ack').checked = false; $('restore-feedback').textContent = ''; updateRestorePreview(); });
@@ -218,7 +220,7 @@ $('restore-download').addEventListener('click', async () => {
     const result = generateRestoredSave(currentBuffer, pendingArchive, slot);
     restoreUrl = URL.createObjectURL(new Blob([result.buffer], { type: 'application/octet-stream' }));
     const link = $('restore-ready'); link.href = restoreUrl; link.download = 'ER0000.sl2'; link.hidden = false;
-    $('restore-feedback').textContent = `Verified ${result.restored.name} in slot ${String(slot).padStart(2, '0')} (character data version ${result.archivedVersion}). Download ER0000.sl2 below. Keep your original backup before replacing the game's save file.`;
+    $('restore-feedback').textContent = `Verified ${result.restored.name} in slot ${String(slot).padStart(2, '0')} (character data version ${result.archivedVersion}). ${result.accountConverted ? 'Account converted to match the destination save. ' : ''}Download ER0000.sl2 below. Keep your original backup before replacing the game's save file.`;
     status.textContent = $('restore-feedback').textContent;
   } catch (error) {
     $('restore-feedback').textContent = error instanceof Error ? error.message : 'Restore generation failed.';
