@@ -13,13 +13,13 @@
 // or a data:image/...;base64,... value to keep the page entirely self-contained.
 // Update description/details to match your tools. Rotation interval is below.
 const PROJECTS = [
- {title:'Ledger',category:'Sorcery TCG',launchUrl:'#',screenshot:'images/ledger.png',description:'Your collection. Your decks. All in one place.',details:'Organize your Sorcery collection, build decks, inspect cards and explore your deck statistics.'},
- {title:'Realm Tracker',category:'Sorcery TCG',launchUrl:'#',screenshot:'images/realmtracker.png',description:'Keep track of your realm, one game at a time.',details:'Realm Tracker is part of the Ancient Workshop collection of Sorcery TCG tools. More information will be added here.'},
+ {title:'Ledger',category:'Sorcery TCG',launchUrl:'https://ledger.sorcery.no/',screenshot:'images/ledger.png',description:'Your collection. Your decks. All in one place.',details:'Organize your Sorcery collection, build decks, inspect cards and explore your deck statistics.'},
+ {title:'Realm Tracker',category:'Sorcery TCG',launchUrl:'https://counter.sorcery.no/',screenshot:'images/realmtracker.png',description:'Keep track of your realm, one game at a time.',details:'Realm Tracker is part of the Ancient Workshop collection of Sorcery TCG tools. More information will be added here.'},
  {title:'Predictus',category:'Sorcery TCG',launchUrl:'#',screenshot:'images/predictus.png',description:'Explore the possibilities behind your next play.',details:'Predictus is part of the Ancient Workshop collection of Sorcery TCG tools. More information will be added here.'},
- {title:'CardScribe',category:'Sorcery TCG',launchUrl:'#',screenshot:'images/cardscribe.png',description:'A place for your Sorcery cards and ideas.',details:'CardScribe is part of the Ancient Workshop collection of Sorcery TCG tools. More information will be added here.'},
- {title:'In a Binder',category:'Sorcery TCG',launchUrl:'#',screenshot:'images/inabinder.png',description:'Give your collection a home.',details:'In a Binder is part of the Ancient Workshop collection of Sorcery TCG tools. More information will be added here.'},
- {title:'EverSave',category:'Elden Ring',launchUrl:'#',screenshot:'images/eversave.png',description:'Preserve your characters. Return to any journey.',details:'Back up individual Elden Ring characters and restore them to the save slot you choose.'},
- {title:'Slider Gallery',category:'Elden Ring',launchUrl:'#',screenshot:'images/slidergallery.png',description:'Find a new face for your next journey.',details:'Explore character appearances for Elden Ring. More information will be added here.'}
+ {title:'CardScribe',category:'Sorcery TCG',launchUrl:'https://cardscribe.sorcery.no/',screenshot:'images/cardscribe.png',description:'A place for your Sorcery cards and ideas.',details:'CardScribe is part of the Ancient Workshop collection of Sorcery TCG tools. More information will be added here.'},
+ {title:'In a Binder',category:'Sorcery TCG',launchUrl:'https://binder.sorcery.no/',screenshot:'images/inabinder.png',description:'Give your collection a home.',details:'In a Binder is part of the Ancient Workshop collection of Sorcery TCG tools. More information will be added here.'},
+ {title:'EverSave',category:'Elden Ring',launchUrl:'https://ancient.dev/eversave/',screenshot:'images/eversave.png',description:'Preserve your characters. Return to any journey.',details:'Back up individual Elden Ring characters and restore them to the save slot you choose.'},
+ {title:'Slider Gallery',category:'Elden Ring',launchUrl:'https://ancient.dev/gallery/',screenshot:'images/slidergallery.png',description:'Find a new face for your next journey.',details:'Explore character appearances for Elden Ring. More information will be added here.'}
 ];
 const ROTATION_INTERVAL = 7000;
 const $=s=>document.querySelector(s);let current=0,timer,paused=matchMedia('(prefers-reduced-motion: reduce)').matches;
