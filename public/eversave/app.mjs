@@ -35,7 +35,7 @@ function button(parent, label, action, disabled = false) {
   element.addEventListener('click', async () => {
     element.disabled = true;
     try { await action(); }
-    catch (error) { const message = error instanceof Error ? error.message : 'The action failed.'; status.textContent = message; if (label === 'Prepare restore') libraryStatus.textContent = message; }
+    catch (error) { const message = error instanceof Error ? error.message : 'The action failed.'; status.textContent = message; if (label === 'Restore this character' || label === 'Choose another destination save') libraryStatus.textContent = message; }
     finally { element.disabled = disabled; }
   });
   return element;
@@ -122,27 +122,16 @@ async function renderLibrary() {
         download(buffer, `${filename(entry.label)}-${entry.createdAt.slice(0, 10)}.erchar`);
         libraryStatus.textContent = `Exported ${entry.label}.`;
       });
-      button(actions, 'Prepare restore', async () => {
-        if (!currentSave) throw new Error('Open a destination .sl2 save first, then select this archive.');
+      button(actions, 'Restore this character', async () => {
         const buffer = await getArchive(entry.id);
-        const metadata = readCharacterArchive(buffer);
-        if (metadata.accountId !== currentSave.steamId) throw new Error('The archive account ID differs from the opened save.');
-        clearPreparedDownload();
-        pendingArchive = buffer;
-        $('restore-source').textContent = `${metadata.characterName} · Level ${metadata.level} · Archived from slot ${String(metadata.sourceSlot).padStart(2, '0')}`;
-        const target = $('restore-target'); target.replaceChildren();
-        currentSave.slots.forEach(slot => {
-          const option = document.createElement('option');
-          option.value = slot.index;
-          option.textContent = `Slot ${String(slot.index).padStart(2, '0')} - ${slot.active ? slot.name || 'Unnamed' : 'Empty'}`;
-          target.append(option);
-        });
-        target.value = String(metadata.sourceSlot);
-        $('restore-ack').checked = false;
-        updateRestorePreview();
-        $('restore-feedback').textContent = '';
-        $('restore-panel').hidden = false;
-        $('restore-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        readCharacterArchive(buffer);
+        if (!currentSave) {
+          const file = await chooseDestinationSave();
+          if (!file) return;
+          await open(file);
+          if (!currentSave) throw new Error(status.textContent);
+        }
+        prepareCharacterRestore(buffer);
       });
       button(actions, 'Delete', async () => {
         if (!confirm(`Delete "${entry.label}" from this browser? Export it first if you want to keep a copy.`)) return;
@@ -153,6 +142,60 @@ async function renderLibrary() {
     libraryStatus.textContent = error instanceof Error ? error.message : 'Could not read browser archives.';
   }
 }
+function chooseDestinationSave() {
+  return new Promise(resolve => {
+    const dialog = document.createElement('dialog');
+    dialog.className = 'destination-dialog';
+    dialog.setAttribute('aria-labelledby', 'destination-dialog-title');
+    const title = document.createElement('h2');
+    title.id = 'destination-dialog-title'; title.textContent = 'Choose a destination save';
+    const copy = document.createElement('p');
+    copy.textContent = 'Choose the ER0000.sl2 file you want to restore into. You will choose the character slot next.';
+    const file = document.createElement('input');
+    file.type = 'file'; file.accept = '.sl2,application/octet-stream';
+    file.id = 'destination-save-file';
+    const label = document.createElement('label');
+    label.htmlFor = file.id; label.className = 'action-button'; label.textContent = 'Choose .sl2 file';
+    const cancel = document.createElement('button');
+    cancel.type = 'button'; cancel.className = 'action-button'; cancel.textContent = 'Cancel';
+    const actions = document.createElement('div'); actions.className = 'slot-actions'; actions.append(label, cancel);
+    const finish = selected => { dialog.close(); dialog.remove(); resolve(selected); };
+    file.addEventListener('change', () => finish(file.files[0] || null), {once:true});
+    cancel.addEventListener('click', () => finish(null), {once:true});
+    dialog.addEventListener('cancel', event => { event.preventDefault(); finish(null); }, {once:true});
+    dialog.append(title, copy, file, actions); document.body.append(dialog); dialog.showModal();
+  });
+}
+function prepareCharacterRestore(buffer) {
+  if (!currentSave) throw new Error('Choose a destination save first.');
+  const metadata = readCharacterArchive(buffer);
+  if (metadata.accountId !== currentSave.steamId) throw new Error('The archive account ID differs from the chosen save. Choose a save from the same account.');
+  clearPreparedDownload();
+  pendingArchive = buffer;
+  $('restore-source').textContent = `${metadata.characterName} · Level ${metadata.level} · Archived from slot ${String(metadata.sourceSlot).padStart(2, '0')}`;
+  const target = $('restore-target'); target.replaceChildren();
+  currentSave.slots.forEach(slot => {
+    const option = document.createElement('option'); option.value = slot.index;
+    option.textContent = `Slot ${String(slot.index).padStart(2, '0')} - ${slot.active ? slot.name || 'Unnamed' : 'Empty'}`;
+    target.append(option);
+  });
+  target.value = String(metadata.sourceSlot);
+  $('restore-ack').checked = false;
+  updateRestorePreview();
+  $('restore-feedback').textContent = '';
+  libraryStatus.textContent = 'Choose the slot to restore this character into.';
+  $('restore-panel').hidden = false;
+  $('restore-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+button($('restore-panel'), 'Choose another destination save', async () => {
+  const archive = pendingArchive;
+  if (!archive) throw new Error('Select a character archive first.');
+  const file = await chooseDestinationSave();
+  if (!file) return;
+  await open(file);
+  if (!currentSave) throw new Error(status.textContent);
+  prepareCharacterRestore(archive);
+});
 function updateRestorePreview() {
   if (!currentSave || !pendingArchive) return;
   const slot = currentSave.slots[Number($('restore-target').value) - 1];
